@@ -71,7 +71,7 @@ def get_product_info(question):
         print(final_result)
         product_names = [result[0] for result in final_result]
         product_prices = [str(result[1]) for result in final_result]
-        return f"http://127.0.0.1:8000/achat?noms={','.join(product_names)}&prix={','.join(product_prices)}"
+        return f"http://127.0.0.1:8000/achat?noms={','.join(product_names)}&prix={','.join(product_prices)}?nombre={','.join(str(response.product_number))}"
     return None
 
 

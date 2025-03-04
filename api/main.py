@@ -41,6 +41,9 @@ def chat(query_input: QueryInput, db: Session = Depends(get_bd_historique)):
     return QueryResponse(answer=ai_answer, session_id=session_id)
 
 @app.get("/achat")
-def achat(noms, prix):
-    return {"noms":noms,
-            "prix": prix}
+def achat(noms, prix, nombre):
+    noms = noms.split(",")
+    prix = prix.split(",")
+    nombre = nombre.split(",")
+    return {noms[i]: {"prix" : prix[i], "nombre": nombre[i]} for i in range(len(noms))}
+

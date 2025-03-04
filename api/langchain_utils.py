@@ -6,7 +6,6 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_fireworks import ChatFireworks
 from operator import itemgetter
-from typing import List
 
 from langchain_groq import ChatGroq
 
@@ -63,7 +62,7 @@ answer_prompt = ChatPromptTemplate.from_template(
          dans la base de données du magasin. Soyez poli, chalereux et clair dans vos réponses, en donnant seulement les 
          informations essentielles mais en proposant au client qu'il puisse demander plus de détails.
          SI LE RÉSULTAT SQL EST NUL, REPONDS "Veuillez réformulez votre question svp." ou "Nous n'avons pas ce produit"
-         SELON LE CONTEXT DE LA CONVERSATION.
+         SELON LE CONTEXT DE LA CONVERSATION MAIS PAS LES DEUX REPONSES EN MEME TEMPS.
          Tu ne vas saluer le client qu'au debut de la conversation mais aussi tes reponses doivent avec cohérant avec
          la conversation:
          conversation:{conversation}
