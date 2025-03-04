@@ -1,12 +1,11 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_chroma import Chroma
-from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_ollama import OllamaEmbeddings
 
 example_few_shot = [
     {
         "input": "Bonjour",
-        "query": 'SELECT * categories '
+        "query": 'SELECT *  FROM categories '
     },
     {
         "input": 'Quel sont les marques de produits que vous avez?',
@@ -53,6 +52,21 @@ example_few_shot = [
     {
         "input": "je vais prendre le chips et deux coca",
         "query": "SELECT prix FROM produits WHERE nom LIKE '%Lay\'s Chips%' OR nom LIKE '%Coca-Cola%"
+    },
+    {
+        "input": "je voudrais une boisson",
+        "query": 'SELECT nom, description, prix FROM supermarche.produits WHERE categorie_id = (SELECT categorie_id FROM categories WHERE nom = "Boissons")'
+    },
+    {
+        "input": "je vais prendre une télé avec 3 oreo alors",
+        "query": 'SELECT SUM(prix * quantite) AS total_prix FROM(SELECT prix,1 AS quantite FROM produits where '
+                 'nom="Sony TV 4K"  union all select prix, 3 AS quantite from produits where nom = "Oreo Biscuits") as '
+                 'sous_requete;'
+    },
+    {
+        "input": "quel boisson pouvez vous me proposer",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON'
+                 ' p.categorie_id = c.categorie_id WHERE c.nom LIKE "%boisson%"'
     }
 ]
 
