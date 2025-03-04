@@ -1,4 +1,6 @@
 from  typing import List
+
+from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from langchain_together import ChatTogether
@@ -7,10 +9,10 @@ import pandas as pd
 
 load_dotenv()
 
-def get_select_tables(conversation=None, model ="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"):
+def get_select_tables(conversation=None, model="llama-3.3-70b-versatile"):
     if conversation is None:
         conversation = []
-    llm = ChatTogether(model_name=model)
+    llm = ChatGroq(model_name=model)
     def get_table_details():
         table_description = pd.read_csv("../docs/desrciption_db.csv")
 
