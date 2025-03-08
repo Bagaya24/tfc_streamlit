@@ -4,7 +4,7 @@ from pydantic import BaseModel, HttpUrl, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langchain_ollama import ChatOllama
-from sqlalchemy import create_engine, Column, Integer, String, DECIMAL, ForeignKey, Date
+from sqlalchemy import create_engine, Column, Integer, String, DECIMAL, ForeignKey, Date, or_
 
 from sqlalchemy.orm import sessionmaker, declarative_base
 
@@ -33,8 +33,6 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def search_product(nom: str):
-    return session.query(Produits.nom, Produits.prix).filter(Produits.nom == nom).first()
 
 class ProductsLink(BaseModel):
     is_purchase: bool = Field(
@@ -48,6 +46,17 @@ product_prompt = ChatPromptTemplate.from_messages([
         Determine if the user wants to buy a product or is just asking for information.
         If they want to buy, return 'is_purchase': True and the product name.
         If they are just asking, return 'is_purchase': False and no product details.
+        Here some examples: 
+        question: avez vous un produit?
+        ai answer: False
+        question: Combien coute tel produit?
+        ai answer: False
+        question: Je voudrais tel produit
+        ai answer: False
+        question: Je voudrais acheter tel produit
+        ai answer: True
+        question: Je voudrais prendre tel produit
+        ai answer: True
     """),
     ("human", "{question}")
 ])
@@ -63,19 +72,20 @@ def get_product_info(question):
     product_names = response.product_names
     if product_names is None:
         return None
-    price_mapping = dict(zip(product_names, response.product_number))
-    results = session.query(Produits.nom, Produits.prix).filter(Produits.nom.in_(product_names)).all()
 
+    results = session.query(Produits.nom, Produits.prix).filter(or_(*(Produits.nom.like(f"%{product_name}%") for product_name in product_names))).all()
+    print(results)
     if results:
-        final_result = [(nom, prix * price_mapping[nom]) for nom, prix in results]
-        print(final_result)
-        product_names = [result[0] for result in final_result]
-        product_prices = [str(result[1]) for result in final_result]
-        return f"http://127.0.0.1:8000/achat?noms={','.join(product_names)}&prix={','.join(product_prices)}?nombre={','.join(str(response.product_number))}"
+
+        product_names = [result[0] for result in results]
+        product_prices = [str(result[1]) for result in results]
+        product_quantity = [str(quantity) for quantity in response.product_number]
+
+        return f"http://127.0.0.1:8000/achat?noms={','.join(product_names)}&prix={','.join(product_prices)}&nombre={','.join(product_quantity)}"
     return None
 
 
-# print(get_product_info("Je voudrais acheter un kitkat , trois pepsi et deux dove"))
+# print(get_product_info("Je voudrais acheter un kit, deux iphone"))
 
 
 

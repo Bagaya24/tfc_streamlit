@@ -1,7 +1,9 @@
 import uuid
 from typing import List
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from pydantic_utils import QueryInput, QueryResponse, DetailAchat
@@ -22,6 +24,8 @@ def get_bd_historique():
 
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 @app.post("/chat", response_model=QueryResponse)
 def chat(query_input: QueryInput, db: Session = Depends(get_bd_historique)):
@@ -41,9 +45,25 @@ def chat(query_input: QueryInput, db: Session = Depends(get_bd_historique)):
     return QueryResponse(answer=ai_answer, session_id=session_id)
 
 @app.get("/achat")
-def achat(noms, prix, nombre):
+def achat(noms, prix, nombre, request: Request):
     noms = noms.split(",")
     prix = prix.split(",")
-    nombre = nombre.split(",")
-    return {noms[i]: {"prix" : prix[i], "nombre": nombre[i]} for i in range(len(noms))}
+    quantity = nombre.split(",")
+    nombre_produit = len(noms)
+    prix_total = 0
+    prix_quantity = []
+    for p,q in zip(prix, quantity):
+        result = round(float(p) * float(q), 1)
+        prix_quantity.append(result)
+        prix_total += result
 
+    return templates.TemplateResponse("index.html",
+                                      {
+                                          "request": request,
+                                          "noms": noms,
+                                          "prix": prix,
+                                          "quantite": quantity,
+                                          "nombre_produit": nombre_produit,
+                                          "prix_total": prix_total,
+                                          "prix_quantite": prix_quantity
+                                      })
