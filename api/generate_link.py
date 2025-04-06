@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field, field_validator
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
-from langchain_ollama import ChatOllama
+from langchain_together import ChatTogether
 from sqlalchemy import create_engine, Column, Integer, String, DECIMAL, ForeignKey, Date, or_
 
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -16,7 +16,9 @@ SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:fazili@localhost:3306/supermarch
 Base = declarative_base()
 
 llm = ChatGroq(model_name="llama-3.3-70b-versatile", temperature=0)
-# llm = ChatOllama(model="llama3.2:latest")
+# llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
+
+
 class Produits(Base):
     __tablename__ = "Produits"
     product_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -38,8 +40,23 @@ class ProductsLink(BaseModel):
     is_purchase: bool = Field(
         description="True if the user wants to buy, False if they are just asking for information")
     product_names: List[str]| None = Field(description="The names of the products")
-    product_number: List[int] | None = Field(description="The number of each products")
-    # product_price: int = Field(description="The price of the product in the database")
+    product_numbers: List[int] | None = Field(description="The number of each products")
+    # product_names: Optional[List[str]] = Field(
+    #     default=None,
+    #     description="Noms des produits",
+    #     examples=[["Produit A", "Produit B"]]
+    # )
+    #
+    # product_numbers: Optional[List[int]] = Field(
+    #     default=None,
+    #     description="Quantités des produits",
+    #     examples=[[1, 2]])
+    #
+    # @field_validator('product_names', 'product_numbers', mode="before")
+    # def convert_null(cls, v):
+    #     if isinstance(v, str) and v.lower() == 'null':
+    #         return None
+    #     return v
 
 product_prompt = ChatPromptTemplate.from_messages([
     ("system", """
@@ -79,7 +96,7 @@ def get_product_info(question):
 
         product_names = [result[0] for result in results]
         product_prices = [str(result[1]) for result in results]
-        product_quantity = [str(quantity) for quantity in response.product_number]
+        product_quantity = [str(quantity) for quantity in response.product_numbers]
 
         return f"http://127.0.0.1:8000/achat?noms={','.join(product_names)}&prix={','.join(product_prices)}&nombre={','.join(product_quantity)}"
     return None

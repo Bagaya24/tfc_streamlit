@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture Supermarché</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+    <script>
+        tailwind.config = {
+        theme: {
+        extend: {
+        colors: {
+        primary: '#28A745',
+        secondary: '#DC3545'
+        },
+        borderRadius: {
+        'none': '0px',
+        'sm': '4px',
+        DEFAULT: '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '20px',
+        '2xl': '24px',
+        '3xl': '32px',
+        'full': '9999px',
+        'button': '8px'
+        }
+        }
+        }
+    }
+    </script>
+    <link rel="stylesheet" href="../static/css/style_paiement.css">
+    <script src="../static/js/main_paiement.js" defer></script>
+
+
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="max-w-4xl mx-auto p-6">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="flex justify-between items-center mb-8">
+            <button id="cancelBtn" class="flex items-center gap-2">
+                <i class="ri-arrow-left-line"></i>
+                Retourner au chat
+            </button>
+            <h1 class="text-2xl font-semibold">Facture</h1>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full mb-8">
+                <thead>
+                <tr class="border-b">
+                    <th class="text-left py-4 px-4">Produit</th>
+                    <th class="text-center py-4 px-4">Quantité</th>
+                    <th class="text-right py-4 px-4">Prix unitaire</th>
+                    <th class="text-right py-4 px-4">Total</th>
+                </tr>
+                </thead>
+                <tbody id="productList">
+                {% for i in range(nombre_produit) %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 px-4">{{noms[i]}}</td>
+                    <td class="py-4 px-4 text-center">{{quantite[i]}}</td>
+                    <td class="py-4 px-4 text-right">{{prix_unitaire[i]}} $</td>
+                    <td class="py-4 px-4 text-right">{{prix_total_par_produit[i]}} $</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="border-t pt-4">
+            <div class="flex justify-end space-y-2 flex-col items-end">
+                <div class="flex gap-8 font-semibold text-lg">
+                    <span>Total:</span>
+                    <span id="total">{{prix_total}} $</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 flex flex-col items-end gap-4">
+            <button id="payBtn" class="bg-primary text-white px-8 py-3 !rounded-button hover:bg-opacity-90">
+                Effectuer le paiement
+            </button>
+            <div id="confirmMessage" class="hidden text-primary fade-in">
+                <i class="ri-checkbox-circle-line"></i>
+                Paiement effectué avec succès!
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

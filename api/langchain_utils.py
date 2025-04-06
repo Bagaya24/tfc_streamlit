@@ -8,6 +8,7 @@ from langchain_fireworks import ChatFireworks
 from operator import itemgetter
 
 from langchain_groq import ChatGroq
+from langchain_together import ChatTogether
 
 from generate_link import get_product_info
 from setup_dynamique_few_shot_example import vectorstore
@@ -62,10 +63,11 @@ answer_prompt = ChatPromptTemplate.from_template(
         poli, chaleureux et clair dans vos réponses, en donnant seulement les informations essentielles mais en 
         proposant au client qu'il puisse demander plus de détails.
         Instructions spécifiques :
-        Si le résultat de la requête SQL est null, répondez uniquement par :
+        Si Résultat SQL est null, répondez uniquement par :
         "Veuillez reformuler votre question, s'il vous plaît."
         ou
         "Nous n'avons pas ce produit."
+        MAIS SI Résultat SQL N'EST PAS NULL, VEUILLEZ DONNEZ UN REPONSE EN FONCTION DU RESULTAT.
         La devise de la monnaie du supermarché est le dollars américain $
         (Choisissez la réponse la plus adaptée au contexte de la conversation, mais ne proposez pas les deux en même temps.)
         Si le lien de paiement (link) est None, ne mentionnez aucun lien dans votre réponse. Ne parlez pas d'un potentiel
@@ -77,7 +79,8 @@ answer_prompt = ChatPromptTemplate.from_template(
         Avec espace : http://127.0.0.1:8000/achat?noms=Coca-Cola Zero?prix=3.00
         Sans espace : http://127.0.0.1:8000/achat?noms=Coca-Cola%20Zero?prix=3.00
         Format de la réponse : Vous pouvez acheter ce produit [ici](http://127.0.0.1:8000/achat?noms=Coca-Cola%20Zero?prix=3.00).
-
+        Quand tu dois calculer le prix total de ce que le client veut acheter, eviter de mettre les calcules, contente
+        toi de mettre le prix total seulement.
         Ne saluez le client qu'au début de la conversation. Ensuite, assurez-vous que vos réponses restent cohérentes
         avec le contexte de la conversation.
         Conversation : {conversation}
@@ -88,14 +91,16 @@ answer_prompt = ChatPromptTemplate.from_template(
          """
     )
 
-def get_assistant_answer(model: str = "llama-3.3-70b-versatile"):
-    llm = ChatGroq(model_name=model)
+def get_assistant_answer(model: str = "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"):
+    # llm = ChatGroq(model_name=model)
+    # llm = ChatFireworks(model_name=model)
+    llm = ChatTogether(model_name=model)
     execute_query = QuerySQLDatabaseTool(db=db)
     generate_query = create_sql_query_chain(llm, db, generate_sql_prompt)
     answer_chain = answer_prompt | llm | StrOutputParser()
-    return (RunnablePassthrough.assign(tables_names_to_use=select_tables)
-         | RunnablePassthrough.assign(query=generate_query).assign(result=itemgetter("query") | execute_query) |
-          RunnablePassthrough.assign(link = get_product_info) | answer_chain)
+    return (#RunnablePassthrough.assign(tables_names_to_use=select_tables)|
+            RunnablePassthrough.assign(query=generate_query).assign(result=itemgetter("query") | execute_query) |
+            RunnablePassthrough.assign(link = get_product_info) | answer_chain)
 
 # a = get_assistant_answer()
 # print(a.invoke({

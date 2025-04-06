@@ -4,8 +4,17 @@ from langchain_ollama import OllamaEmbeddings
 
 example_few_shot = [
     {
+        "input": "Pouvez vous me donner votre adresse?",
+        "query": "SELECT 'Boulevard Kalema, Q. Les volcans, Commune de Goma, juste en diagonale avec Kin marche' AS message"
+    },
+
+    {
         "input": "Bonjour",
-        "query": 'SELECT *  FROM categories '
+        "query": "SELECT 'Bonjour ! Bienvenue dans notre supermarché Ruvunga.' AS message"
+    },
+    {
+        "input": "Votre horaire de travail",
+        "query": "SELECT 'Du lundi au vendredi nous ouvrons de 7h à 20h, samedi dès 11h à 20h et dimanche dès 9h à 19h.' AS message"
     },
     {
         "input": 'Quel sont les marques de produits que vous avez?',
@@ -35,7 +44,9 @@ example_few_shot = [
     },
     {
         "input": "J'ai faim",
-        "query": 'SELECT nom, description, prix FROM supermarche.produits WHERE categorie_id = (SELECT categorie_id FROM supermarche.categories WHERE nom = "Alimentaire")'
+        "query": """SELECT nom, description, prix FROM supermarche.produits WHERE categorie_id = (SELECT categorie_id 
+                    FROM supermarche.categories WHERE nom IN ("Alimentaire", "Boulangerie", "Viandes", "Fruits et 
+                    Légumes", "Charcuterie"))"""
     },
     {
         "input": "Ça coûte combien",
@@ -43,7 +54,7 @@ example_few_shot = [
     },
     {
         "input": "Bonjour, je cherche du pain",
-        "query": 'SELECT nom, description, prix FROM produits WHERE categorie_id = (SELECT categorie_id FROM categories WHERE nom = "Alimentaire")'
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom = "Boulangerie" AND p.nom LIKE "%pain%"'
     },
     {
         "input": "en prenant le parfum, le bracelet et la télé, ça va coûter combien?",
@@ -67,6 +78,46 @@ example_few_shot = [
         "input": "quel boisson pouvez vous me proposer",
         "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON'
                  ' p.categorie_id = c.categorie_id WHERE c.nom LIKE "%boisson%"'
+    },
+    {
+        "input": "je cherche une chaussure",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom LIKE "%Chaussure%"'
+    },
+    {
+        "input": "je cherche un appareil electronique",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom LIKE "%electronique%"'
+    },
+    {
+        "input": "Bonjour, je cherche une television",
+        "query": 'SELECT nom, description, prix FROM supermarche.produits WHERE description LIKE "%télévision%" or nom LIKE "%television%";'
+    },
+    {
+        "input": "C'est quoi le blender le moins chere",
+        "query": "SELECT nom, prix FROM produits WHERE description LIKE '%blender%' ORDER BY prix ASC LIMIT 1"
+    },
+    {
+        "input": "Quel saucisse irait le mieux avec le pain complet?",
+        "query": 'SELECT nom, description, prix FROM supermarche.produits WHERE description LIKE "%saucisse%";'
+    },
+    {
+        "input": "Pouvez vous avoir du pain et du fromage?",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom IN ("Boulangerie", "Produits laitiers")'
+    },
+    {
+        "input": "Avez vous de la viande?",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom = "viandes"'
+    },
+    {
+        "input": "Je cherche un jus",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom LIKE "%boisson%" AND p.nom LIKE "%jus%"'
+    },
+    {
+        "input": "Avez vous de produits pour faire un petit déjeuner ?",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom = "boulangerie" or c.nom = "produits laitiers" or c.nom = "charcuterie"'
+    },
+    {
+        "input": "Je voudrai faire un jus multi fruit",
+        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom = "fruits et legumes"'
     }
 ]
 
