@@ -61,8 +61,15 @@ class ProduitBase(BaseModel):
     marque_id: int | None = None
     date_expiration: datetime | None = None
 
-class ProduitCreate(ProduitBase):
-    pass
+class ProduitCreate(BaseModel):
+    nom: str
+    description: str | None = None
+    prix: float
+    quantité_en_stock: int
+    categorie_id: int | None = None
+    fournisseur_id: int | None = None
+    marque_id: int | None = None
+    date_expiration: datetime | None = None
 
 class ProduitUpdate(BaseModel):
     nom: str | None = None

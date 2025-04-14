@@ -10,7 +10,7 @@ example_few_shot = [
 
     {
         "input": "Bonjour",
-        "query": "SELECT 'Bonjour ! Bienvenue dans notre supermarché Ruvunga.' AS message"
+        "query": "SELECT * FROM categories"
     },
     {
         "input": "Votre horaire de travail",
@@ -117,7 +117,17 @@ example_few_shot = [
     },
     {
         "input": "Je voudrai faire un jus multi fruit",
-        "query": 'SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON p.categorie_id = c.categorie_id WHERE c.nom = "fruits et legumes"'
+        "query": '''SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON 
+                    p.categorie_id = c.categorie_id WHERE c.nom = "fruits et legumes"'''
+    },
+    {
+        "input": "Avez vous de produit pour diabétique",
+        "query": 'SELECT nom FROM produits WHERE description LIKE "%diabétique%" OR description LIKE "%sans sucre%";'
+    },
+    {
+        "input": "Je cherche de fruits et de légumes",
+        "query": '''SELECT p.nom, p.description, p.prix FROM supermarche.produits p JOIN supermarche.categories c ON 
+                    p.categorie_id = c.categorie_id WHERE c.nom = "fruits et legumes"'''
     }
 ]
 

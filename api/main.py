@@ -9,7 +9,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from pydantic_utils import QueryResponse, QueryInput, Produit, ProduitCreate, ProduitUpdate, Categorie, Marque, \
+
+from pydantic_utils import QueryResponse, QueryInput, ProduitBase, Produit, ProduitCreate, ProduitUpdate, Categorie, Marque, \
     Fournisseur
 from crud import (
     insert_conversation, insert_messages, get_history,

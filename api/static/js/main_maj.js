@@ -215,17 +215,20 @@ async function saveProduct() {
         nom: document.getElementById('nom').value,
         description: document.getElementById('description').value,
         prix: parseFloat(document.getElementById('prix').value),
-        quantite_en_stock: parseInt(document.getElementById('quantite').value),
-        categorie_id: document.getElementById('categorie').value || null,
-        marque_id: document.getElementById('marque').value || null,
-        fournisseur_id: document.getElementById('fournisseur').value || null,
+        quantité_en_stock: parseInt(document.getElementById('quantite').value),
+        categorie_id: parseInt(document.getElementById('categorie').value) || null,
+        marque_id: parseInt(document.getElementById('marque').value) || null,
+        fournisseur_id: parseInt(document.getElementById('fournisseur').value) || null,
         date_expiration: document.getElementById('dateExpiration').value || null
     };
 
     try {
         const url = isEditing ? `/api/produits/${editingProductId}` : '/api/produits';
         const method = isEditing ? 'PUT' : 'POST';
-        
+        console.log("hello")
+        console.log(url)
+        console.log(productData)
+
         const response = await fetch(url, {
             method: method,
             headers: {

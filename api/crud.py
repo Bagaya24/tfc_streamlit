@@ -70,6 +70,7 @@ def ajouter_produit(
     date_expiration: Optional[date] = None
 ):
     """Ajouter un nouveau produit dans la base de données"""
+    print(date_expiration)
     produit = models.Produits(
         nom=nom,
         description=description,
